@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+set(CMAKE_XXX_STANDARD,11)
+project(octree_voxel)
+find_package(PCL 1.7 REQUIRED)
+
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIR})
+add_definitions(${PCL_DEFINITIONS})
+add_executable(octree_voxel octree_voxel.cpp)
+target_link_libraries(octree_voxel ${PCL_LIBRARIES})
