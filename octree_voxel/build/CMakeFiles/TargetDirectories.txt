@@ -1,3 +1,0 @@
-/root/work/octree/build/CMakeFiles/edit_cache.dir
-/root/work/octree/build/CMakeFiles/rebuild_cache.dir
-/root/work/octree/build/CMakeFiles/octree_voxel.dir
