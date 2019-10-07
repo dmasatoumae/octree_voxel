@@ -1,3 +1,0 @@
-/root/work/pointcloud_vol_octree/voxelgrid_filter/build/CMakeFiles/edit_cache.dir
-/root/work/pointcloud_vol_octree/voxelgrid_filter/build/CMakeFiles/rebuild_cache.dir
-/root/work/pointcloud_vol_octree/voxelgrid_filter/build/CMakeFiles/voxel_grid.dir
