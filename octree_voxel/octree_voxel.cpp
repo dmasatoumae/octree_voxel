@@ -18,9 +18,12 @@ public:
         if(!loadCloud(filename))
             return;
         displayedDepth = static_cast<int> (std::floor (octree.getTreeDepth() / 2.0));
+        double resolution_copy  = resolution;
+        std::cout<<resolution<<std::endl;
         octree.setInputCloud(cloud);
         octree.addPointsFromInputCloud();
         voxel_filter(displayedDepth);
+        search();
         saveCloud();
 
     }
@@ -30,9 +33,11 @@ private:
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudVoxel;
     pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> octree;
+    double resolution;
     bool loadCloud(std::string &filename);
     void saveCloud();
     void voxel_filter(int depth);
+    void search();
     int displayedDepth;
 
 };
@@ -69,11 +74,13 @@ void OctreeVoxel::voxel_filter(int depth)
 
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
     double start = pcl::getTime();
-
+    int count=0;
+    int dep=0;
     for (pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::FixedDepthIterator tree_it = 
             octree.fixed_depth_begin(depth);
             tree_it != octree.fixed_depth_end();++tree_it)
     {
+        count++;
 
         Eigen::Vector3f voxel_min, voxel_max;
         octree.getVoxelBounds(tree_it,voxel_min,voxel_max);
@@ -81,6 +88,8 @@ void OctreeVoxel::voxel_filter(int depth)
         pt_voxel_center.x=(voxel_min.x()+voxel_max.x())/2.0f;
         pt_voxel_center.y=(voxel_min.y()+voxel_max.y())/2.0f;
         pt_voxel_center.z=(voxel_min.z()+voxel_max.z())/2.0f;
+        std::cout<<pt_voxel_center.x<<","<<pt_voxel_center.y<<","<<pt_voxel_center.z<<","<<std::endl;
+
 
         cloudVoxel->points.push_back(pt_voxel_center);
 
@@ -90,6 +99,7 @@ void OctreeVoxel::voxel_filter(int depth)
                 static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
             container->getContainer().getCentroid(pt_centroid);
+            dep++;
         }
         else
         {
@@ -108,8 +118,51 @@ void OctreeVoxel::voxel_filter(int depth)
         }
         //displayCloud->points.push_back(pt_centroid);
     }
+    std::cout<<count<<std::endl;
+    std::cout<<dep<<std::endl;
     double end = pcl::getTime();
 }
+void OctreeVoxel::search()
+{
+    std::cout<<resolution<<std::endl;
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> search_octree ((float)resolution);
+    search_octree.setInputCloud(cloudVoxel);
+    search_octree.addPointsFromInputCloud();
+
+    pcl::PointXYZ searchPoint;
+    for(int i=0;i<70;i++)
+    {
+        std::cout<<
+        cloudVoxel->points[i].x<<","<<
+        cloudVoxel->points[i].y<<","<<
+        cloudVoxel->points[i].z<<std::endl;
+        pcl::PointXYZ searchPoint;
+
+
+    }
+    /*
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>::LeafNodeIterator itit (&search_octree);
+    int coucou = 0;
+    while(*++itit)
+    {
+        coucou++;
+        //std::cout << itit.getCurrentOctreeDepth() << ",";
+    }
+    std::cout<<coucou<<std::endl;
+
+    
+    for(int i=0;i<30;i++){
+        searchPoint.x=
+        searchPoint.y=
+        searchPoint.z=
+    }
+    */
+
+    
+    
+
+}
+
 
         
 
