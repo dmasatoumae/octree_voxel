@@ -35,6 +35,8 @@ private:
     pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> octree;
     double resolution;
     double resolution_copy;
+    double voxel_size;
+    double volume=0.0;
     int octree_leaf_count=0;
     bool loadCloud(std::string &filename);
     void saveCloud();
@@ -89,7 +91,9 @@ void OctreeVoxel::voxel_filter(int depth)
         pt_voxel_center.x=(voxel_min.x()+voxel_max.x())/2.0f;
         pt_voxel_center.y=(voxel_min.y()+voxel_max.y())/2.0f;
         pt_voxel_center.z=(voxel_min.z()+voxel_max.z())/2.0f;
-        std::cout<<pt_voxel_center.x<<","<<pt_voxel_center.y<<","<<pt_voxel_center.z<<","<<std::endl;
+        if(octree_leaf_count==1)
+            voxel_size=voxel_max.x()-voxel_min.x();
+        //std::cout<<pt_voxel_center.x<<","<<pt_voxel_center.y<<","<<pt_voxel_center.z<<","<<std::endl;
 
 
         cloudVoxel->points.push_back(pt_voxel_center);
@@ -119,8 +123,8 @@ void OctreeVoxel::voxel_filter(int depth)
         }
         //displayCloud->points.push_back(pt_centroid);
     }
-    std::cout<<octree_leaf_count<<std::endl;
-    std::cout<<dep<<std::endl;
+    //std::cout<<octree_leaf_count<<std::endl;
+    //std::cout<<dep<<std::endl;
     double end = pcl::getTime();
 }
 void OctreeVoxel::search()
@@ -131,6 +135,9 @@ void OctreeVoxel::search()
     //float radius = (float)resolution_copy;
     float radius = 0.00001;
     int test_jouge_count = 0;
+    //search_octree.getVoxelBounds()
+    std::cout<<"aaaa"<<voxel_size<<std::endl;
+
     for(int i = 0;i<octree_leaf_count;i++)
     {
         /*
@@ -142,7 +149,7 @@ void OctreeVoxel::search()
         pcl::PointXYZ searchPoint;
         searchPoint.x=cloudVoxel->points[i].x;
         searchPoint.y=cloudVoxel->points[i].y;
-        for(double searchP_z = resolution_copy;searchP_z<=30;searchP_z+=resolution_copy)
+        for(double searchP_z = voxel_size;searchP_z<=30;searchP_z+=voxel_size)
         {
             //for(float resolution)
             std::vector<int> pointIdxRadiusSearch;
@@ -160,7 +167,9 @@ void OctreeVoxel::search()
                     searchPoint.y<<","<<
                     searchPoint.z<<std::endl;
                     */
-                    std::cout<<searchPoint.z - cloudVoxel->points[i].z<<std::endl;
+                    double height = searchPoint.z - cloudVoxel->points[i].z;
+                    volume+=voxel_size*voxel_size*height;
+
                     test_jouge_count++;
                     
 
@@ -170,6 +179,8 @@ void OctreeVoxel::search()
         }
     }
     std::cout<<"count="<<test_jouge_count<<std::endl;
+
+    std::cout<<"volume="<<volume<<std::endl;
     /*
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>::LeafNodeIterator itit (&search_octree);
     int coucou = 0;
